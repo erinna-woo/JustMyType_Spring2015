@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Just My Type</title>
+
+    <!-- Bootstrap core CSS --> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    
+    <!-- Custom styles for this template -->
+    <link href="gamePage.css" rel="stylesheet">
+
+
+    <script type="text/javascript" href = "routes.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" href = "rssParserSub.js"></script>
+  </head>
+
+
+  <body>
+     <canvas id="canvas" >This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+
+ <div id="custom-bootstrap-menu" class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header"><a class="navbar-brand" href="#">Just My Type</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-menubuilder"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse navbar-menubuilder">
+            <ul class="nav navbar-nav navbar-right">
+              <p class="navbar-text"> Difficulty: </p>
+                </li>  
+                 <li class="active">         
+                <button onclick = "changeDifficulty()" id="difficultyButton" type="button" class="btn btn-customlevel" data-toggle="tooltip" data-placement="Down" title="Change difficulty">
+                 EASY</button>
+              </li> 
+              <p class="navbar-text" id = "wpm"> WPM: 47</p>             
+            
+              <li class="active">         
+                <button onclick = "setArticles()" id="button-glyph" type="button" class="btn btn-custom" data-toggle="tooltip" data-placement="Down" title="Articles">
+                  <span class="glyphicon glyphicon-list-alt" aria-hidden="true" ></span>
+                </button>
+              </li>    
+              <li class="active">         
+                <button onclick = "setStats()" id="button-glyph" type="button" class="btn btn-custom"  data-toggle="tooltip" data-placement="Down" title="Stats">
+                  <span class="glyphicon glyphicon-stats" aria-hidden="true" ></span>
+                </button>
+              </li>     
+              <li class="active">         
+                <button onclick = "setLeaderboards()" id="button-glyph" type="button" class="btn btn-custom"  data-toggle="tooltip" data-placement="Down" title="Leaderboard">
+                  <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                </button>
+              </li>  
+                 <li class="active">         
+                <button id="button-glyph" type="button" class="btn btn-custom"  data-toggle="tooltip" data-placement="Down" title="Start a new game">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </li>  
+            </ul>
+        </div>
+    </div>
+</div>
+
+ 
+
+    <!-- Bootstrap core JavaScript
+    ==================================================
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script type = "text/javascript" src="game.js"></script>
+
+    <script>
+console.log("running");
+
+google.load("feeds", "1");
+
+function topicHeadlines(topic) {
+    
+    var searchTopic = topic;
+    var theLinks = [];
+    var theHeadlines = [];
+    //================
+    function removeBold(aString) {
+    aString = aString.replace('<b>','');
+    aString = aString.replace('</b>','');
+    aString = aString.replace('<b>','');
+    aString = aString.replace('</b>','');
+    aString = aString.replace('<b>','');
+    aString = aString.replace('</b>','');
+    aString = aString.replace('<b>','');
+    aString = aString.replace('</b>','');
+    
+    aString = aString.replace('&#39;', "'");
+    aString = aString.replace('&#39;', "'");
+    aString = aString.replace('&#39;', "'");
+    aString = aString.replace('&#39;', "'");
+
+    aString = aString.replace('&amp;', '&');
+
+    aString = aString.replace(' ...','');
+    aString = aString.replace('...','');
+    aString = aString.replace(' . . .', '');
+
+    aString = aString.replace(' - The New York Times', '');
+    aString = aString.replace(' - New York Times', '');
+    aString = aString.replace(' - The New York', '');
+    aString = aString.replace(' - New York', '');
+    aString = aString.replace(' - New', '');
+    aString = aString.replace(' - NYTimes', '');
+    aString = aString.replace('.com', '');
+
+    return aString;
+  }
+
+  function OnLoad() {
+    // Query for president feeds on cnn.com
+    var query = 'site:http://www.nytimes.com/' + ' ' + searchTopic;
+    google.feeds.findFeeds(query, findDone);
+  }
+
+  function findDone(result) {
+    // Make sure we didn't get an error.
+    if (!result.error) {
+      // Get content div
+      var content = document.getElementById('title');
+      var html = '';
+
+      // Loop through the results and print out the title of the feed and link to
+      // the url.
+      for (var i = 0; i < result.entries.length; i++) {
+        var entry = result.entries[i];
+        theLinks[i] = entry.link;
+        theHeadlines[i] = removeBold(entry.title);
+        console.log(theHeadlines[i]);
+
+      }
+    }
+  }
+
+
+
+google.setOnLoadCallback(OnLoad);
+
+return [theHeadlines,theLinks]
+
+}
+
+var x = document.getElementById("theWord").innerHTML;
+</script>
+<script>
+console.log(x);
+topicHeadlines(x);
+</script>
+
+
+  </body>
+</html>
+
